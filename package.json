@@ -1,0 +1,22 @@
+{
+  "name": "rest-api",
+  "version": "1.0.0",
+  "description": "REST API for a Blockchain Network",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app.js"
+  },
+  "author": "Eu",
+  "license": "ISC",
+  "dependencies": {
+    "cloudant": "^1.10.0",
+    "cors": "^2.8.5",
+    "dotenv": "^6.2.0",
+    "express": "^4.16.4",
+    "fabric-ca-client": "^1.4.0",
+    "fabric-client": "^1.4.0",
+    "fabric-network": "^1.4.0",
+    "js-yaml": "^3.12.1"
+  }
+}
