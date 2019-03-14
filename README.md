@@ -15,7 +15,7 @@
       
   **- ```db.config.js```**
   
-  Database Configuration File. We use `.env` to set `cloudant_username` and `cloudant_password``.
+  Database Configuration File. We use `.env` to set `cloudant_username` and `cloudant_password` .
 
   **- ```network.config.js```**
   
