@@ -51,21 +51,21 @@ organizations:
             - peer0.dealer.com
             - peer1.dealer.com
         certificateAuthorities:
-            - ca-dealer
+            - ca-org1
     Insurer:
         mspid: InsurerMSP
         peers:
             - peer0.insurer.com
             - peer1.insurer.com
         certificateAuthorities:
-            - ca-insurer
+            - ca-org2
     Registry:
         mspid: RegistryMSP
         peers:
             - peer0.registry.com
             - peer1.registry.com
         certificateAuthorities:
-            - ca-registry
+            - ca-org3
 
 
 orderers:
@@ -117,29 +117,29 @@ peers:
             request-timeout: 120001
 
 certificateAuthorities:
-    ca-dealer:
+    ca-org1:
         url: http://localhost:7054
         httpOptions:
             verify: false
         registrar:
-            - enrollId: dealer-admin
+            - enrollId: admin-org1
               enrollSecret: adminpw
-        caName: ca-dealer
+        caName: ca-org1
 
-    ca-insurer:
+    ca-org2:
         url: http://localhost:7154
         httpOptions:
             verify: false
         registrar:
-            - enrollId: insurer-admin
+            - enrollId: admin-org2
               enrollSecret: adminpw
-        caName: ca-insurer
+        caName: ca-org2
 
-    ca-registry:
+    ca-org3:
         url: http://localhost:7254
         httpOptions:
             verify: false
         registrar:
-            - enrollId: registry-admin
+            - enrollId: admin-org3
               enrollSecret: adminpw
-        caName: ca-registry
+        caName: ca-org3

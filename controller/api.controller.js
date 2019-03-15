@@ -2,19 +2,29 @@ const networkServices = require('../config/network.config')
 
 /**
  * 
- * @param {*} userCPF - User primary key. It identifies uniquely each user in an organization
- *                      Must be formatted as: "11100011122" with a total of 11 characters, all numbers
+ * @param {*} walletName - User primary key. It identifies uniquely each user in an organization
+ *                         Must be formatted as: "11100011122-org1" with a total of 11 characters before the dash, all numbers
+ *                         and 4 characters after it
  */
 
-function registerUser(userCPF) {
+function registerUser(walletName) {
     return new Promise(async (resolve, reject) => {
 
-        // === Removing all non-numeric characters from userCPF ===
-        userCPF = userCPF.replace(/\D/g, '')
-        if (userCPF.length !== 11) reject("Invalid CPF! It must be only numbers with 11 digits")
+        // === Getting CPF from walletName and removing all non-numeric characters ===
+        const cpf = walletName.substring(0, walletName.indexOf("-")).replace(/\D/g, '')
+
+        // === Getting Org from walletName ===
+        const org = walletName.substring(walletName.indexOf("-") + 1)
+
+        // === Checking individually for each separate part of the parameter ===
+        if (cpf.length !== 11) return reject("Invalid CPF! It must be only numbers with 11 digits")
+        if (org.length !== 4 || org.substring(0, 3) !== "org" || isNaN(parseInt(org[org.length - 1]))) return reject("Invalid Organization!")
+
+        // === Checking if variable walletName is equal to treated variables. If not, return error
+        if (walletName !== cpf + org) return reject("Invalid variable format!")
 
         // === Calling registerUser() function from network-service.js file ===
-        networkServices.registerUser(userCPF)
+        networkServices.registerUser(walletName, org)
             .then((resp) => {
                 resolve(resp)
             })
@@ -27,22 +37,36 @@ function registerUser(userCPF) {
 
 /**
  * 
- * @param {*} userCPF - User primary key. It uniquely identifies each user in an organization
- *                      Must be formatted as: "11100011122" with a total of 11 characters, all numbers 
+ * @param {*} walletName - User primary key. It identifies uniquely each user in an organization
+ *                         Must be formatted as: "11100011122-org1" with a total of 11 characters before the dash, all numbers
+ *                         and 4 characters after it
  * 
  * @param {*} secret - Password created when registered
  *                     It is a string with numbers, lowercase and uppercase characters
  */
 
-function enrollUser(userCPF, secret) {
+function enrollUser(walletName, secret) {
     return new Promise(async (resolve, reject) => {
-        // === Removing all non-numeric characters from userCPF ===
-        userCPF = userCPF.replace(/\D/g, '')
-        if (userCPF.length !== 11) reject("Invalid CPF! It must be only numbers with 11 digits")
+
+        // === Getting CPF from walletName and removing all non-numeric characters ===
+        const cpf = walletName.substring(0, walletName.indexOf("-")).replace(/\D/g, '')
+
+        // === Getting Org from walletName ===
+        const org = walletName.substring(walletName.indexOf("-") + 1)
+
+        // === Checking individually for each separate part of the parameter ===
+        if (cpf.length !== 11) return reject("Invalid CPF! It must be only numbers with 11 digits")
+        if (org.length !== 4 || org.substring(0, 3) !== "org" || isNaN(parseInt(org[org.length - 1]))) return reject("Invalid Organization!")
+
+        // === Checking if variable walletName is equal to treated variables. If not, return error
+        if (walletName !== cpf + org) return reject("Invalid variable format!")
 
         // === Calling enrollUser() function from network-service.js file ===
-        networkServices.enrollUser(userCPF, secret).then((resp) => {
+        networkServices.enrollUser(walletName, secret, org).then((resp) => {
             resolve(resp)
+        })
+        .catch((err) => {
+            reject(err)
         })
 
     })
@@ -77,17 +101,32 @@ function getAllIdentities() {
  *                               new_owner: string     -> ex: "11100011122"
  *                  }
  *                  
- * @param {*} user - 
+ * @param {*} walletName - User CPF + User Organization.
+ *                         ex: "00011100011-org1" 
  */
 
-function createCar(car, user) {
+function createCar(car, walletName) {
     return new Promise(async (resolve, reject) => {
+
+        // === Getting CPF from walletName and removing all non-numeric characters ===
+        const cpf = walletName.substring(0, walletName.indexOf("-")).replace(/\D/g, '')
+
+        // === Getting Org from walletName ===
+        const org = walletName.substring(walletName.indexOf("-") + 1)
+        
+        // === Checking individually for each separate part of the parameter ===
+        if (cpf.length !== 11) return reject("Invalid CPF! It must be only numbers with 11 digits")
+        if (org.length !== 4 || org.substring(0, 3) !== "org" || isNaN(parseInt(org[org.length - 1]))) return reject("Invalid Organization!")
+        
+        // === Checking if variable walletName is equal to treated variables. If not, return error
+        if (walletName !== cpf + org) return reject("Invalid variable format!")
+        
         // === Checking parameters ===
         if (typeof car !== 'object') reject('Car must be an object!')
         if (typeof car == 'object' && car.length !== undefined) reject('Car must be an object, not an array!')
 
         try {
-            if (user) var contract = await networkServices.connectChannel(user)
+            if (walletName) var contract = await networkServices.connectChannel(walletName)
             else reject("Invalid User!")
             if (car.plate &&
                 car.color &&
