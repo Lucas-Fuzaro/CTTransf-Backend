@@ -1,10 +1,6 @@
 const fs = require('fs')
 const path = require('path')
-const {
-    FileSystemWallet,
-    Gateway,
-    X509WalletMixin
-} = require('fabric-network')
+const { FileSystemWallet, Gateway, X509WalletMixin } = require('fabric-network')
 const FabricCAServices = require('fabric-ca-client');
 const yaml = require('js-yaml')
 
@@ -14,13 +10,24 @@ const conProfile = yaml.safeLoad(fs.readFileSync(path.resolve(__dirname, 'connec
 // Wallet: filesystem of users certificates and keys
 const wallet = new FileSystemWallet(path.join(process.cwd(), 'wallet'))
 
-createAdm()
+// Getting ENV
+const num_orgs = process.env.NUM_ORGS
 
+for(var current_org = 1; current_org == num_orgs; current_org++){
+    initialSetup(current_org)
+}
 
-async function createAdm() {
+const initialSetup = async (current_org) => {
+    console.info(`@@@ Starting ORG${current_org} ...`)
+
+    // === Creating ADMIN Identity for that ORG ===
+    await createAdm(current_org)
+}
+
+async function createAdm(current_org) {
     try {
         // Does ADMIN exists?
-        const adminExistence = await wallet.exists('admin')
+        const adminExistence = await wallet.exists('admin-org' + current_org.toString())
         if (adminExistence) throw new Error('Admin already exists!')
 
         // Connecting into the network using ADMIN Identity

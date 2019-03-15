@@ -1,33 +1,145 @@
 ---
-name: basic-network
-version: 1.0.0
-client:
-    organization: Org1
-    connection:
-        timeout:
-            peer:
-                endorser: '300'
-            orderer: '300'
+
+name: "cttransf-network"
+description: "Connection Profile for the Car Title Transfership network. This is a demo code and not to be considered production quality code"
+version: "1.0"
 channels:
-    mychannel:
+    main-channel:
         orderers:
-        - orderer.example.com
+            - orderer0.cttransf.com
+            - orderer1.cttransf.com
+            - orderer2.cttransf.com
+
         peers:
-            peer0.org1.example.com: {}
+            peer0.dealer.com:
+                endorsingPeer: true
+                chaincodeQuery: true
+                ledgerQuery: true
+                eventSource: true
+            peer1.dealer.com:
+                endorsingPeer: false
+                chaincodeQuery: true
+                ledgerQuery: true
+                eventSource: true
+
+            peer0.insurer.com:
+                endorsingPeer: true
+                chaincodeQuery: true
+                ledgerQuery: true
+                eventSource: true
+            peer1.insurer.com:
+                endorsingPeer: false
+                chaincodeQuery: true
+                ledgerQuery: true
+                eventSource: true
+
+            peer0.registry.com:
+                endorsingPeer: true
+                chaincodeQuery: true
+                ledgerQuery: true
+                eventSource: true
+            peer1.registry.com:
+                endorsingPeer: false
+                chaincodeQuery: true
+                ledgerQuery: true
+                eventSource: true
+
 organizations:
-    Org1:
-        mspid: Org1MSP
+    Dealer:
+        mspid: DealerMSP
         peers:
-        - peer0.org1.example.com
+            - peer0.dealer.com
+            - peer1.dealer.com
         certificateAuthorities:
-        - ca.example.com
+            - ca-dealer
+    Insurer:
+        mspid: InsurerMSP
+        peers:
+            - peer0.insurer.com
+            - peer1.insurer.com
+        certificateAuthorities:
+            - ca-insurer
+    Registry:
+        mspid: RegistryMSP
+        peers:
+            - peer0.registry.com
+            - peer1.registry.com
+        certificateAuthorities:
+            - ca-registry
+
+
 orderers:
-    orderer.example.com:
+    orderer0.cttransf.com:
         url: grpc://localhost:7050
+        grpcOptions:
+            ssl-target-name-override: orderer0.cttransf.com
+    orderer1.cttransf.com:
+        url: grpc://localhost:7150
+        grpcOptions:
+            ssl-target-name-override: orderer1.cttransf.com
+    orderer2.cttransf.com:
+        url: grpc://localhost:7250
+        grpcOptions:
+            ssl-target-name-override: orderer2.cttransf.com
+
 peers:
-    peer0.org1.example.com:
-        url: grpc://localhost:7051
+    peer0.dealer.com:
+        url: grpc://localhost:7151
+        grpcOptions:
+            ssl-target-name-override: peer0.dealer.com
+            request-timeout: 120001
+    peer1.dealer.com:
+        url: grpc://localhost:7251
+        grpcOptions:
+            ssl-target-name-override: peer1.dealer.com
+            request-timeout: 120001
+
+    peer0.insurer.com:
+        url: grpc://localhost:7351
+        grpcOptions:
+            ssl-target-name-override: peer0.insurer.com
+            request-timeout: 120001
+    peer1.insurer.com:
+        url: grpc://localhost:7451
+        grpcOptions:
+            ssl-target-name-override: peer1.insurer.com
+            request-timeout: 120001
+
+    peer0.registry.com:
+        url: grpc://localhost:7551
+        grpcOptions:
+            ssl-target-name-override: peer0.registry.com
+            request-timeout: 120001
+    peer1.registry.com:
+        url: grpc://localhost:7651
+        grpcOptions:
+            ssl-target-name-override: peer1.registry.com
+            request-timeout: 120001
+
 certificateAuthorities:
-    ca.example.com:
+    ca-dealer:
         url: http://localhost:7054
-        caName: ca.example.com
+        httpOptions:
+            verify: false
+        registrar:
+            - enrollId: dealer-admin
+              enrollSecret: adminpw
+        caName: ca-dealer
+
+    ca-insurer:
+        url: http://localhost:7154
+        httpOptions:
+            verify: false
+        registrar:
+            - enrollId: insurer-admin
+              enrollSecret: adminpw
+        caName: ca-insurer
+
+    ca-registry:
+        url: http://localhost:7254
+        httpOptions:
+            verify: false
+        registrar:
+            - enrollId: registry-admin
+              enrollSecret: adminpw
+        caName: ca-registry
